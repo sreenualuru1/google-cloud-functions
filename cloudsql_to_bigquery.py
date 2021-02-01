@@ -21,12 +21,12 @@ def cloudsql_to_bigquery(request):
         
         # Create dataframe reading table data
         dataframe = pb.read_sql(sql_query, connection, index_col='<col_name>Ex:id')
-        print(sql_data.head(5))
+        print(dataframe.head(5))
         
         # Connect to BigQuery client
         bq_client = bigquery.Client()
-        bq_dataset = client.dataset('<bq_dataset_name>')
-        bq_table_name = dataset.table('<bq_table_name>')
+        bq_dataset = bq_client.dataset('<bq_dataset_name>')
+        bq_table_name = bq_dataset.table('<bq_table_name>')
         
         # Create job configurations
         bq_job_config = bigquery.LoadJobConfig()
