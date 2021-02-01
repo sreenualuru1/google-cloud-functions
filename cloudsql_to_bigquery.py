@@ -7,7 +7,6 @@ def cloudsql_to_bigquery(request):
     request_obj = request.get_json(silent=True)
     job_done = False
     if request_obj and request_obj['message'] == os.getenv('TASK_TO_EXECUTE'):
-        
         # Connect to CloudSql
         connection = pymysql.connect(
             unix_socket=os.getenv('CONNECTION_STRING'),
@@ -18,29 +17,28 @@ def cloudsql_to_bigquery(request):
         print('Connection:', connection)
             
         # Query to read data from CloudSql table
-        query = 'SELECT * FROM salary'
+        sql_query = 'SELECT * FROM <sql_table_name>'
         
         # Create dataframe reading table data
-        result = pb.read_sql(query, connection, index_col='id')
-        print(result.head(5))
+        dataframe = pb.read_sql(sql_query, connection, index_col='<col_name>Ex:id')
+        print(sql_data.head(5))
         
         # Connect to BigQuery client
-        client = bigquery.Client()
-        dataset_id = 'test'
-        dataset = client.dataset(dataset_id)
-        table_name = dataset.table('salary')
+        bq_client = bigquery.Client()
+        bq_dataset = client.dataset('<bq_dataset_name>')
+        bq_table_name = dataset.table('<bq_table_name>')
         
         # Create job configurations
-        job_config = bigquery.LoadJobConfig()
-        job_config.autodetect = True
-        job_config.write_disposition = 'WRITE_TRUNCATE'
+        bq_job_config = bigquery.LoadJobConfig()
+        bq_job_config.autodetect = True
+        bq_job_config.write_disposition = 'WRITE_TRUNCATE' # WRITE_APPEND, WRITE_EMPTY, WRITE_DISPOSITION_UNSPECIFIED
         
         # Load data into BigQuery table
-        load_data = client.load_table_from_dataframe(result, table_name, job_config=job_config)
-        load_data.result() # Wait for the job to finish
+        write_data = bq_client.load_table_from_dataframe(dataframe, bq_table_name, job_config=bq_job_config)
+        write_data.result() # Wait for the job to finish
         
-        # Print loading data task id
-        print('Running task {}'.format(load_data))
+        # Print write job task id
+        print('Running task {}'.format(write_data))
         job_done = True
         
     # Return a valid response
