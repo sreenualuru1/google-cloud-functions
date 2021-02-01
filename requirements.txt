@@ -1,0 +1,7 @@
+# Function dependencies, for example:
+# package>=version
+
+PyMySQL>=0.9.3
+pandas>=1.2.1
+pyarrow>=3.0.0
+google-cloud-bigquery>=2.3.1
