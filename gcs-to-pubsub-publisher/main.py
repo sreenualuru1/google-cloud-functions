@@ -4,8 +4,8 @@ import logging
 # from google.cloud import storage
 # from google.oauth2 import service_account
 
-project_id = os.environ.get['project_id']
-topic_id = os.environ.get['pubsub_topic_id']
+project_id = os.environ.get('project_id')
+topic_id = os.environ.get('pubsub_topic_id')
 logging.info(f'project_id:{project_id}, topic_id:{topic_id}')
 
 def main(event, context):
@@ -16,7 +16,7 @@ def main(event, context):
     """
     gcs_path_prefix = 'test-sales-data'
     logging.info(event['contentType'], event['name'])
-    if event['contentType'] is 'text/csv' and event['name'].find(gcs_path_prefix):
+    if event['contentType'] == 'text/csv' and event['name'].find(gcs_path_prefix):
         logging.info(f"Processing file: {event['name']}.")
 
 
