@@ -1,7 +1,10 @@
-import json
-import pandas as pd
-
-
-def read_csv_file(request):
-   req_obj = request.get_json(silent=True)
-   print(req_obj)
+def main(event, context):
+    """Triggered by a change to a Cloud Storage bucket.
+    Args:
+         event (dict): Event payload.
+         context (google.cloud.functions.Context): Metadata for the event.
+    """
+    file = event
+    print(f"Processing file: {file['name']}.")
+    print(event)
+    print(context)
