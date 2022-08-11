@@ -6,7 +6,7 @@ import logging
 
 project_id = os.environ.get('project_id')
 topic_id = os.environ.get('pubsub_topic_id')
-logging.info(f'project_id:{project_id}, topic_id:{topic_id}')
+logging.log(f'project_id:{project_id}, topic_id:{topic_id}')
 
 def main(event, context):
     """Triggered by a change to a Cloud Storage bucket.
@@ -15,9 +15,9 @@ def main(event, context):
          context (google.cloud.functions.Context): Metadata for the event.
     """
     gcs_path_prefix = 'test-sales-data'
-    logging.info(event['contentType'], event['name'])
+    logging.log(event['contentType'], event['name'])
     if event['contentType'] == 'text/csv' and event['name'].find(gcs_path_prefix):
-        logging.info(f"Processing file: {event['name']}.")
+        logging.log(f"Processing file: {event['name']}.")
 
 
 
