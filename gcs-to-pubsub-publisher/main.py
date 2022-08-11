@@ -1,8 +1,8 @@
 import os
 import logging
 
-from google.cloud import storage
-from google.cloud import service_account
+# from google.cloud import storage
+# from google.oauth2 import service_account
 
 project_id = os.environ.get['project_id']
 topic_id = os.environ.get['pubsub_topic_id']
