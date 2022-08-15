@@ -38,7 +38,7 @@ def process_data(message: pubsub_v1.subscriber.message.Message) -> None:
 
     # create dataframe
     new_df = pd.read_json(json.dumps(json_data))
-    logger.info(new_df.head(n=10))
+    # logger.info(new_df.head(n=10))
 
     # dump into bq table
     new_df.to_gbq(destination_table=str(bq_table_name),
