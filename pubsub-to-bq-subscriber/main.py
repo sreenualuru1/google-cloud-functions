@@ -1,15 +1,27 @@
 import os
 import json
+import logging
 import pandas as pd
 from google.oauth2 import service_account
 from google.cloud import pubsub_v1
 from concurrent.futures import TimeoutError
 
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 # required details
 project_id = os.environ.get('project_id')
 subscription_id = os.environ.get('subscription_id')
 bq_table_name = os.environ.get('bq_table_name')
-bq_table_schema = os.environ.get('bq_table_schema')
+bq_table_schema = [{'name': 'OrderID', 'type': 'STRING'},
+                   {'name': 'Item', 'type': 'STRING'},
+                   {'name': 'UnitPrice', 'type': 'FLOAT'},
+                   {'name': 'Qty', 'type': 'INTEGER'},
+                   {'name': 'TotalPrice', 'type': 'FLOAT'},
+                   {'name': 'CustID', 'type': 'STRING'},
+                   {'name': 'Name', 'type': 'STRING'},
+                   {'name': 'Contact', 'type': 'INTEGER'}]
 
 # Number of seconds the subscriber should listen for messages
 timeout = 10.0
@@ -26,7 +38,7 @@ def process_data(message: pubsub_v1.subscriber.message.Message) -> None:
 
     # create dataframe
     new_df = pd.read_json(json.dumps(json_data))
-    # print(new_df.head(n=10))
+    logger.info(new_df.head(n=10))
 
     # dump into bq table
     new_df.to_gbq(destination_table=str(bq_table_name),
@@ -34,7 +46,7 @@ def process_data(message: pubsub_v1.subscriber.message.Message) -> None:
                   chunksize=100,
                   if_exists='append',
                   table_schema=bq_table_schema)
-    print('Data pushed to BQ table successfully')
+    logger.info('Data pushed to BQ table successfully')
 
 
 # main method
@@ -49,7 +61,7 @@ def main(event, context):
         project=project_id, subscription=subscription_id)
     streaming_pull = subscriber.subscribe(
         subscription=subscription_path, callback=process_data)
-    print('Listining for messages on {subscription}...\n'.format(
+    logger.info('Listining for messages on {subscription}...'.format(
         subscription=subscription_path))
 
     # Wrap subscriber in a 'with' block to automatically call close() when done.
