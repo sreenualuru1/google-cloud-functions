@@ -23,9 +23,9 @@ def main(event, context):
     """
 
     file = event['name']
-    logger.info('Processing file: {filename}'.format(filename=file['name']))
+    logger.info('Processing file: {filename}'.format(filename=file))
     if file.startswith(path_prefix) and file.endswith('.csv'):
-        gcs_file_path = 'gs://'+bucket_name+'/'+event['name']
+        gcs_file_path = os.path.join('gs://', bucket_name, file)
         logger.info('Blob: {blob}'.format(blob=gcs_file_path))
 
         # read csv file
