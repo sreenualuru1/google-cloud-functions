@@ -3,3 +3,4 @@
 
 google-cloud-pubsub>=2.13.6
 pandas>=1.4.3
+pandas-gbq>=0.17.8
