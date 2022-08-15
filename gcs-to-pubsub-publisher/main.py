@@ -1,14 +1,9 @@
 import os
 import logging
+from sys import prefix
 import pandas as pd
 from google.cloud import storage
 from google.cloud import pubsub_v1
-
-
-project_id = os.environ.get('project_id')
-topic_id = os.environ.get('pubsub_topic_id')
-bucket_name = os.environ.get('gcs_bucket_name')
-path_prefix = os.environ.get('gcs_path_prefix')
 
 
 # main method
@@ -19,8 +14,21 @@ def main(event, context):
          context (google.cloud.functions.Context): Metadata for the event.
     """
 
+    logging.basicConfig()
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+
+    project_id = os.environ.get('project_id')
+    topic_id = os.environ.get('pubsub_topic_id')
+    bucket_name = os.environ.get('gcs_bucket_name')
+    path_prefix = os.environ.get('gcs_path_prefix')
+
     logger.info('#### filetype:{file_type}, filename:{file}'.format(
         file_type=event['contentType'], file=event['name']))
+
+    logger.info('#### Project:{project}, Topic:{topic}, Bucket:{bucket}, Prefix:{prefix}'.format(
+        project=project_id, topic=topic_id, bucket=bucket_name, prefix=path_prefix
+    ))
 
     if event['contentType'] == 'text/csv' and event['name'].find(path_prefix):
         gcs_file_path = 'gs://'+bucket_name+'/'+event['name']
@@ -40,8 +48,8 @@ def main(event, context):
         topic_path = publisher.topic_path(project=project_id, topic=topic_id)
         future = publisher.publish(topic=topic_path, data=json_encode)
         logger.info(future.result())
-        logger.info('#### Data published to topic: {pubsub_topic}'.format(pubsub_topic=topic_path))
-
+        logger.info('#### Data published to topic: {pubsub_topic}'.format(
+            pubsub_topic=topic_path))
 
 
 # def hello_gcs(event, context):
@@ -52,9 +60,3 @@ def main(event, context):
 #     """
 #     file = event
 #     print(f"Processing file: {file['name']}.")
-
-if __name__ == "__main__":
-    logging.basicConfig()
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
-    main()
